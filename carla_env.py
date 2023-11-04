@@ -68,14 +68,14 @@ class Environment:
 
         # Spawn ego vehicle
         transform = random.choice(self.spawn_points)
-        self.vehicle = self.world.spawn_actor(self.vehicle_bp, transform)
-        self.actor_ego.append(self.vehicle)
+        self.ego_vehicle = self.world.spawn_actor(self.vehicle_bp, transform)
+        self.actor_ego.append(self.ego_vehicle)
 
         # Set autopilot mode
-        self.vehicle.set_autopilot(True,self.TM_PORT)
+        self.ego_vehicle.set_autopilot(True,self.TM_PORT)
 
         # Attach and listen to RGB Ego sensor
-        self.rgb_ego = self.world.spawn_actor(self.rgb_cam_bp, self.rgb_ego_transform, attach_to=self.vehicle, attachment_type=carla.AttachmentType.Rigid)
+        self.rgb_ego = self.world.spawn_actor(self.rgb_cam_bp, self.rgb_ego_transform, attach_to=self.ego_vehicle, attachment_type=carla.AttachmentType.Rigid)
         self.actor_sensors.append(self.rgb_ego)
         self.rgb_ego.listen(lambda data: self.__process_rgb_ego_data(data))
 
@@ -85,7 +85,7 @@ class Environment:
         NUM_VEHICLES = 50
         max_vehicles = min([NUM_VEHICLES, len(self.spawn_points)])
 
-        # Choose the models that should be spawned
+        # Choose the vehicles models that should be spawned
         vehicle_bps = []
         for vehicle_bp in self.bp_lib.filter('*vehicle*'):
             vehicle_bps.append(vehicle_bp)
@@ -97,7 +97,7 @@ class Environment:
                 self.actor_vehicles.append(temp_vehicle)
                 temp_vehicle.set_autopilot(True,self.TM_PORT)
         
-        print("World populated.")  
+        print("World populated with " + str(max_vehicles) + " vehicles.")  
 
     def __process_rgb_ego_data(self, image):
         """
