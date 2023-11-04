@@ -31,8 +31,8 @@ Currently, WSL2 has no stable support for [GPU-accelerated Vulkan](https://githu
 - Once the project is fully configured, run `pip freeze > requirements.txt` to generate a dependencies list
 - Create a ".gitignore" file where you put "env" in the first line to ignore all files within the venv
 
-
-- Run ip route, the "default via" address is the address to use for the Windows host.
+- Check if you can [access the default CARLA port 2000](https://superuser.com/questions/1679757/how-to-access-windows-localhost-from-wsl2) from within WSL2 with `nc -zv "$(hostname).local" 2000`. If not, it might be necessary to open the Ports [2000 and 2001](https://carla.readthedocs.io/en/0.9.14/start_quickstart/) in the Firewall.
+- Run `ip route` in WSL2, the "default via" address is the address to use to access the Windows localhost, where CARLA is running. In the main.py file, update `env = Environment(host="172.31.240.1"...)`
 
 ## Development in Linux 20.04
 
