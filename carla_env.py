@@ -45,6 +45,9 @@ class Environment:
         print("CARLA initialitaion complete.")
 
     def init_ego(self):
+        """Initializes the ego vehicle including its sensor setup
+        """
+
         self.RGB_EGO_WIDTH=1024
         self.RGB_EGO_HEIGHT=1024
         self.RGB_FOV=105
@@ -79,9 +82,12 @@ class Environment:
         self.actor_sensors.append(self.rgb_ego)
         self.rgb_ego.listen(lambda data: self.__process_rgb_ego_data(data))
 
-        print("Ego vehicle initialitaion complete.")
+        print("Ego vehicle initialization complete.")
     
     def populate(self):
+        """Populate the world with vehicles which are in autopilot mode, controlled by the Traffic Manager
+        """
+
         NUM_VEHICLES = 50
         max_vehicles = min([NUM_VEHICLES, len(self.spawn_points)])
 
@@ -100,10 +106,10 @@ class Environment:
         print("World populated with " + str(max_vehicles) + " vehicles.")  
 
     def __process_rgb_ego_data(self, image):
+        """Observations directly viewable with OpenCV in CHW format.
+        Change this processing if you want to use PyTorch, Pillow, PyGame, Matplotlib, ... 
         """
-            Observations directly viewable with OpenCV in CHW format.
-            Change this processing if you want to use PyTorch, Pillow, PyGame, Matplotlib, ... 
-         """
+        
         i = np.array(image.raw_data)
         i2 = i.reshape((self.RGB_EGO_HEIGHT, self.RGB_EGO_WIDTH, 4))
         i3 = i2[:, :, :3]
