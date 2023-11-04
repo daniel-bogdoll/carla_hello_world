@@ -1,5 +1,4 @@
-# carla_hello_world
-First steps with CARLA 0.9.14
+# Hello World, CARLA 0.9.14!
 
 ## Development in WSL2
 
@@ -11,7 +10,7 @@ Currently, WSL2 has no stable support for [GPU-accelerated Vulkan](https://githu
 
 - Download [CARLA 0.9.14](https://carla-releases.s3.eu-west-3.amazonaws.com/Windows/CARLA_0.9.14.zip)
 - Unzip it, access the `..\CARLA_0.9.14\WindowsNoEditor` folder with PowerShell
-- Run `./CarlaUE4.exe -RenderOffScreen`
+- Run `./CarlaUE4.exe -RenderOffScreen -carla-rpc-port=2000`
 
 #### Setup Ubuntu 20.04 in WSL2
 
