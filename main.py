@@ -3,7 +3,7 @@ import cv2
 from carla_env import Environment
 
 def main():
-    env = Environment(world="Town02_Opt", host="172.31.240.1", port=2000, tm_port=8000)
+    env = Environment(world="Town02_Opt", host="localhost", port=2000, tm_port=8000, timeout_wait=1000)
     env.init_ego()
     env.populate()
 

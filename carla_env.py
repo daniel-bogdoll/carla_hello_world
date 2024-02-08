@@ -2,9 +2,12 @@ import carla
 import random
 import numpy as np
 
+from Models.World.global_route_planner import GlobalRoutePlanner
+from Models.World.behavior_agent import BehaviorAgent
+
 class Environment:
 
-    def __init__(self, world='Town02_Opt', host='localhost', port=2000, tm_port=8000, timeout_wait=10):
+    def __init__(self, world='Town02_Opt', host='localhost', port=2000, tm_port=8000, timeout_wait=100):
         self.client = carla.Client(host, port)              # Connect to the server
         self.client.set_timeout(timeout_wait)               # Time the clients tries to find the server
 
@@ -66,12 +69,15 @@ class Environment:
         self.rgb_ego = []                                                       # We will listen to the sensor with a callback function, which can store its readings here
 
         # Spawn ego vehicle
-        transform = random.choice(self.spawn_points)                            
-        self.ego_vehicle = self.world.spawn_actor(self.vehicle_bp, transform)
+        ego_start_transform = random.choice(self.spawn_points)
+        ego_end_transform = random.choice(self.spawn_points)                          
+        self.ego_vehicle = self.world.spawn_actor(self.vehicle_bp, ego_start_transform)
         self.actor_ego.append(self.ego_vehicle)
 
-        # Set autopilot mode with traffic manager
-        self.ego_vehicle.set_autopilot(True,self.TM_PORT)
+        #Compute route for ego and let it follow the route
+        self.ego_vehicle_route = self.create_shortest_path(ego_start_transform, ego_end_transform)
+        self.create_behavior_agent_and_set_global_plan(self.ego_vehicle_route)
+        
 
         # Attach and listen to RGB ego sensor
         self.rgb_ego = self.world.spawn_actor(self.rgb_cam_bp, self.rgb_ego_transform, attach_to=self.ego_vehicle, attachment_type=carla.AttachmentType.Rigid)
@@ -80,6 +86,35 @@ class Environment:
 
         print("Ego vehicle initialization complete.")
     
+    def create_shortest_path(self, start_transform, end_transform):
+        """
+        Create shortest path between two given transforms.
+        """
+        sampling_resolution = 1
+        grp = GlobalRoutePlanner(self.map, sampling_resolution)
+
+        ego_vehicle_start_location = carla.Location(start_transform.location)
+        ego_vehicle_end_location = carla.Location(end_transform.location)
+
+        self.EGO_VEHICLE_ROUTE = grp.trace_route(
+            ego_vehicle_start_location,
+            ego_vehicle_end_location,
+        )
+
+        return self.EGO_VEHICLE_ROUTE
+    
+    def create_behavior_agent_and_set_global_plan(self, ego_vehicle_route):
+        """
+        Creates a behavior agent for the ego vehicle and sets its global plan.
+        """
+        self.EGO_AGENT = BehaviorAgent(self.ego_vehicle, behavior="normal")
+        self.EGO_AGENT.set_global_plan(
+            plan=ego_vehicle_route,
+            stop_waypoint_creation=True,
+            clean_queue=True,
+        )
+        return self.EGO_AGENT
+
     def populate(self):
         """Populate the world with vehicles which are in autopilot mode, controlled by the Traffic Manager
         """
