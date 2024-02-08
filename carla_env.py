@@ -4,7 +4,7 @@ import numpy as np
 
 class Environment:
 
-    def __init__(self, world='Town02_Opt', host='localhost', port=2000, tm_port=8000, timeout_wait=10):
+    def __init__(self, world='Town02_Opt', host='localhost', port=2000, tm_port=8000, timeout_wait=100):
         self.client = carla.Client(host, port)              # Connect to the server
         self.client.set_timeout(timeout_wait)               # Time the clients tries to find the server
 
