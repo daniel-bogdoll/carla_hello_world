@@ -1,6 +1,6 @@
 # Hello World, CARLA 0.9.14!
 
-This repository contains two branches. In the **main** branch, the ego vehicle is controlled with an Autopilot. In the more complex branch **routemap**, a route is computed on the map and a controlled is used to follow it. In addition, this planned route is visualized on a Bird's-Eye-View map.
+This repository contains two branches. In the **main** branch, the ego vehicle is controlled with an Autopilot. In the more complex branch **routemap**, a route is computed on the map and a controller is used to follow it. In addition, this planned route is visualized on a Bird's-Eye-View map.
 
 ## Setup
 ### Development in WSL2
