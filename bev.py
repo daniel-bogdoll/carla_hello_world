@@ -53,7 +53,7 @@ def main():
 
     # World Offset
     waypoints = env.map.generate_waypoints(2) # list of carla.Waypoints
-    route_map = waypoints
+    route_map = env.ego_vehicle_route
     min_x = min(waypoints, key=lambda x: x.transform.location.x).transform.location.x - _margin
     min_y = min(waypoints, key=lambda x: x.transform.location.y).transform.location.y - _margin
     global _world_offset
@@ -65,6 +65,7 @@ def main():
     try:
         while(True):
             env.world.tick()
+            env.ego_vehicle_apply_control_run_step()
             try:
                 ev_transform = env.ego_vehicle.get_transform()
                 ev_loc = ev_transform.location
@@ -74,7 +75,7 @@ def main():
                 # Route Mask
                 route_mask = np.zeros([_width, _width], dtype=np.uint8)
                 route_in_pixel = np.array([[_world_to_pixel(wp.transform.location)]
-                                            for wp in route_map])
+                                            for wp, _ in route_map[0:80]])
                 route_warped = cv.transform(route_in_pixel, M_warp)
                 cv.polylines(route_mask, [np.round(route_warped).astype(np.int32)], False, 1, thickness=16)
                 route_mask = route_mask.astype(bool)
@@ -85,8 +86,9 @@ def main():
                 route_mask_img.save(os.path.join(script_dir, filename))
                 i += 1
                 cv.waitKey(1)
-            except:
-                print("No observation")
+            except Exception as error:
+                print("An exception occurred:", error)
+
     finally:
         for actor in env.actor_ego:
             actor.destroy()   

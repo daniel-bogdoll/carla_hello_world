@@ -77,7 +77,6 @@ class Environment:
         #Compute route for ego and let it follow the route
         self.ego_vehicle_route = self.create_shortest_path(ego_start_transform, ego_end_transform)
         self.create_behavior_agent_and_set_global_plan(self.ego_vehicle_route)
-        
 
         # Attach and listen to RGB ego sensor
         self.rgb_ego = self.world.spawn_actor(self.rgb_cam_bp, self.rgb_ego_transform, attach_to=self.ego_vehicle, attachment_type=carla.AttachmentType.Rigid)
@@ -114,6 +113,12 @@ class Environment:
             clean_queue=True,
         )
         return self.EGO_AGENT
+    
+    def ego_vehicle_apply_control_run_step(self):
+        """
+        Apply a control to the ego vehicle and run a simulation step.
+        """
+        self.ego_vehicle.apply_control(self.EGO_AGENT.run_step(True))
 
     def populate(self):
         """Populate the world with vehicles which are in autopilot mode, controlled by the Traffic Manager
@@ -144,8 +149,3 @@ class Environment:
         i2 = i.reshape((self.RGB_EGO_HEIGHT, self.RGB_EGO_WIDTH, 4))
         i3 = i2[:, :, :3]
         self.rgb_ego = i3
-
-
-
-
-
